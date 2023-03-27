@@ -117,11 +117,11 @@ func newDescription(table *types.TableDescription) Description {
 		desc.Throughput = newThroughput(table.ProvisionedThroughput)
 	}
 
-	if table.ItemCount != 0 {
-		desc.Items = table.ItemCount
+	if *table.ItemCount != 0 {
+		desc.Items = *table.ItemCount
 	}
-	if table.TableSizeBytes != 0 {
-		desc.Size = table.TableSizeBytes
+	if *table.TableSizeBytes != 0 {
+		desc.Size = *table.TableSizeBytes
 	}
 
 	for _, index := range table.GlobalSecondaryIndexes {
@@ -141,11 +141,11 @@ func newDescription(table *types.TableDescription) Description {
 		idx.HashKey, idx.RangeKey = schemaKeys(index.KeySchema)
 		idx.HashKeyType = lookupADType(table.AttributeDefinitions, idx.HashKey)
 		idx.RangeKeyType = lookupADType(table.AttributeDefinitions, idx.RangeKey)
-		if index.ItemCount != 0 {
-			idx.Items = index.ItemCount
+		if *index.ItemCount != 0 {
+			idx.Items = *index.ItemCount
 		}
-		if index.IndexSizeBytes != 0 {
-			idx.Size = index.IndexSizeBytes
+		if *index.IndexSizeBytes != 0 {
+			idx.Size = *index.IndexSizeBytes
 		}
 		desc.GSI = append(desc.GSI, idx)
 	}
@@ -164,11 +164,11 @@ func newDescription(table *types.TableDescription) Description {
 		idx.HashKey, idx.RangeKey = schemaKeys(index.KeySchema)
 		idx.HashKeyType = lookupADType(table.AttributeDefinitions, idx.HashKey)
 		idx.RangeKeyType = lookupADType(table.AttributeDefinitions, idx.RangeKey)
-		if index.ItemCount != 0 {
-			idx.Items = index.ItemCount
+		if *index.ItemCount != 0 {
+			idx.Items = *index.ItemCount
 		}
-		if index.IndexSizeBytes != 0 {
-			idx.Size = index.IndexSizeBytes
+		if *index.IndexSizeBytes != 0 {
+			idx.Size = *index.IndexSizeBytes
 		}
 		desc.LSI = append(desc.LSI, idx)
 	}

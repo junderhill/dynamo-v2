@@ -53,8 +53,8 @@ func TestDescribeTableDescription(t *testing.T) {
 		},
 		TableStatus:      "ACTIVE",
 		CreationDateTime: aws.Time(time.Now()),
-		ItemCount:        1001,
-		TableSizeBytes:   987654321,
+		ItemCount:        aws.Int64(1001),
+		TableSizeBytes:   aws.Int64(987654321),
 	}
 
 	desc := newDescription(tableDescription)
