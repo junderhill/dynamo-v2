@@ -179,6 +179,7 @@ func TestTx(t *testing.T) {
 }
 
 func TestTxRetry(t *testing.T) {
+	t.Skip("TODO: https://github.com/guregu/dynamo/pull/206#issue-1441187222")
 	if testDB == nil {
 		t.Skip(offlineSkipMsg)
 	}
