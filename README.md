@@ -1,5 +1,5 @@
 ## dynamo [![GoDoc](https://godoc.org/github.com/guregu/dynamo?status.svg)](https://godoc.org/github.com/guregu/dynamo)
-`import "github.com/guregu/dynamo"`
+`import "github.com/junderhill/dynamo-v2"`
 
 dynamo is an expressive [DynamoDB](https://aws.amazon.com/dynamodb/) client for Go, with an easy but powerful API. dynamo integrates with the official [AWS SDK v2](https://github.com/aws/aws-sdk-go-v2/).
 
@@ -17,7 +17,7 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
-	"github.com/guregu/dynamo"
+	"github.com/junderhill/dynamo-v2"
 )
 
 // Use struct tags much like the standard JSON library,
