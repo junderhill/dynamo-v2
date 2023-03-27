@@ -8,7 +8,7 @@ This library is stable and versioned with Go modules.
 ### Example
 
 ```go
-package dynamo
+package dynamov2
 
 import (
 	"time"

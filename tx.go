@@ -1,13 +1,14 @@
-package dynamo
+package dynamov2
 
 import (
 	"context"
+	"crypto/rand"
+	"encoding/hex"
 	"errors"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
-	"github.com/gofrs/uuid"
 )
 
 // ErrNoInput is returned when APIs that can take multiple inputs are run with zero inputs.
@@ -122,11 +123,7 @@ func (tx *GetTx) AllWithContext(ctx context.Context, out interface{}) error {
 	var resp *dynamodb.TransactGetItemsOutput
 	err = retry(ctx, func() error {
 		var err error
-<<<<<<< HEAD
-		resp, err = tx.db.client.TransactGetItemsWithContext(ctx, input)
-=======
 		resp, err = tx.db.client.TransactGetItems(ctx, input)
->>>>>>> pr/1
 		if tx.cc != nil && resp != nil {
 			for _, cc := range resp.ConsumedCapacity {
 				addConsumedCapacity(tx.cc, &cc)

@@ -1,4 +1,4 @@
-package dynamo
+package dynamov2
 
 import (
 	"errors"
@@ -7,9 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/smithy-go"
-	"github.com/gofrs/uuid"
 )
 
 func TestTx(t *testing.T) {

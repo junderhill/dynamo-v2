@@ -1,4 +1,4 @@
-package dynamo_test
+package dynamov2_test
 
 import (
 	"encoding/json"
@@ -7,7 +7,7 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
-	"github.com/junderhill/dynamo-v2"
+	dynamo "github.com/junderhill/dynamo-v2"
 )
 
 type Coffee struct {

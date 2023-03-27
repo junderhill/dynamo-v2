@@ -1,4 +1,4 @@
-package dynamo
+package dynamov2
 
 var reserved = map[string]bool{
 	"ABORT":          true,

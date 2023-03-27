@@ -1,4 +1,4 @@
-package dynamo
+package dynamov2
 
 import (
 	"context"
@@ -63,12 +63,14 @@ type CreateTable struct {
 // for the primary key and all indices.
 //
 // An example of a from struct follows:
-// 	type UserAction struct {
-// 		UserID string    `dynamo:"ID,hash" index:"Seq-ID-index,range"`
-// 		Time   time.Time `dynamo:",range"`
-// 		Seq    int64     `localIndex:"ID-Seq-index,range" index:"Seq-ID-index,hash"`
-// 		UUID   string    `index:"UUID-index,hash"`
-// 	}
+//
+//	type UserAction struct {
+//		UserID string    `dynamo:"ID,hash" index:"Seq-ID-index,range"`
+//		Time   time.Time `dynamo:",range"`
+//		Seq    int64     `localIndex:"ID-Seq-index,range" index:"Seq-ID-index,hash"`
+//		UUID   string    `index:"UUID-index,hash"`
+//	}
+//
 // This creates a table with the primary hash key ID and range key Time.
 // It creates two global secondary indices called UUID-index and Seq-ID-index,
 // and a local secondary index called ID-Seq-index.

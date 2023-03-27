@@ -1,4 +1,4 @@
-package dynamo
+package dynamov2
 
 import (
 	"context"
@@ -95,7 +95,7 @@ func (q *Query) Range(name string, op Operator, values ...interface{}) *Query {
 	var err error
 	q.rangeKey = name
 	q.rangeOp = op
-	q.rangeValues, err = marshalSliceNoOmit(values)
+	q.rangeValues, err = marshalSlice(values)
 	q.setError(err)
 	for i, v := range q.rangeValues {
 		if v == nil {
