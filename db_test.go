@@ -2,6 +2,7 @@ package dynamov2
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"testing"
@@ -9,6 +10,7 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/credentials"
 )
 
 var (
@@ -24,17 +26,28 @@ func init() {
 		if dte := os.Getenv("DYNAMO_TEST_ENDPOINT"); dte != "" {
 			endpoint = aws.String(dte)
 		}
-		cfg, err := config.LoadDefaultConfig(
-			context.Background(),
-			config.WithRegion(region),
-			config.WithEndpointResolverWithOptions(
-				aws.EndpointResolverWithOptionsFunc(
-					func(service, region string, options ...interface{}) (aws.Endpoint, error) {
-						return aws.Endpoint{URL: *endpoint}, nil
-					},
-				),
-			),
-		)
+
+		endpointResolver := aws.EndpointResolverWithOptionsFunc(func(service, region string, options ...interface{}) (aws.Endpoint, error) {
+			if endpoint != nil {
+				fmt.Printf("Using endpoint: %s\n", *endpoint)
+				return aws.Endpoint{
+					URL:           *endpoint,
+					SigningRegion: region,
+				}, nil
+			}
+			return aws.Endpoint{}, &aws.EndpointNotFoundError{} //default to the default endpoint resolver
+		})
+
+		cfg, err := config.LoadDefaultConfig(context.Background(), func(o *config.LoadOptions) error {
+			o.Region = region
+			o.EndpointResolverWithOptions = endpointResolver
+
+			if endpoint != nil {
+				o.Credentials = credentials.NewStaticCredentialsProvider("fake", "fake", "fake")
+			}
+			return nil
+		})
+
 		if err != nil {
 			log.Fatal(err)
 		}
