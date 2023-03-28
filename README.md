@@ -1,9 +1,9 @@
 ## dynamo [![GoDoc](https://godoc.org/github.com/guregu/dynamo?status.svg)](https://godoc.org/github.com/guregu/dynamo)
 `import "github.com/junderhill/helixddb"`
 
-dynamo is an expressive [DynamoDB](https://aws.amazon.com/dynamodb/) client for Go, with an easy but powerful API. dynamo integrates with the official [AWS SDK v2](https://github.com/aws/aws-sdk-go-v2/).
+HelixDdb is an expressive [DynamoDB](https://aws.amazon.com/dynamodb/) client for Go, with an easy but powerful API. HelixDdb integrates with the official [AWS SDK v2](https://github.com/aws/aws-sdk-go-v2/).
 
-This library is stable and versioned with Go modules.
+This project is forked from [guregu/dynamo](https://github.com/guregu/dynamo) and builds on the hard work of the original author and the [PR](https://github.com/guregu/dynamo/pull/206) from [irohiroki](https://github.com/irohiroki) who ported the orginal `dynamo` library to the AWS DynamoDb SDK v2.
 
 ### Example
 
