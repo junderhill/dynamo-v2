@@ -12,12 +12,12 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/aws/smithy-go"
 	"github.com/aws/smithy-go/logging"
-	"github.com/junderhill/helixddb/helixddbdbiface"
+	"github.com/junderhill/helixddb/helixddbiface"
 )
 
 // DB is a DynamoDB client.
 type DB struct {
-	client helixddbdbiface.DynamoDBAPI
+	client helixddbiface.DynamoDBAPI
 	logger logging.Logger
 }
 
@@ -34,7 +34,7 @@ func New(cfg aws.Config) *DB {
 }
 
 // NewFromIface creates a new client with the given interface.
-func NewFromIface(client helixddbdbiface.DynamoDBAPI) *DB {
+func NewFromIface(client helixddbiface.DynamoDBAPI) *DB {
 	return &DB{
 		client: client,
 		logger: logging.NewStandardLogger(os.Stdout),
@@ -42,7 +42,7 @@ func NewFromIface(client helixddbdbiface.DynamoDBAPI) *DB {
 }
 
 // Client returns this DB's internal client used to make API requests.
-func (db *DB) Client() helixddbdbiface.DynamoDBAPI {
+func (db *DB) Client() helixddbiface.DynamoDBAPI {
 	return db.client
 }
 
