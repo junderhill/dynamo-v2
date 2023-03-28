@@ -1,10 +1,10 @@
-// package dynamov2dbiface provides an interface to enable mocking the Amazon DynamoDB service client
+// package helixddbdbiface provides an interface to enable mocking the Amazon DynamoDB service client
 // for testing your code.
 //
 // It is important to note that this interface will have breaking changes
 // when the service model is updated and adds new API operations, paginators,
 // and waiters.
-package dynamov2dbiface
+package helixddbdbiface
 
 import (
 	"context"

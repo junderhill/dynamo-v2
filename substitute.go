@@ -1,4 +1,4 @@
-package dynamov2
+package helixddb
 
 import (
 	"bytes"
@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
-	"github.com/junderhill/dynamo-v2/internal/exprs"
+	"github.com/junderhill/helixddb/internal/exprs"
 )
 
 // subber is a "mixin" for operators for keep track of subtituted keys and values

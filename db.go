@@ -1,5 +1,5 @@
 // Package dynamo offers a rich DynamoDB client.
-package dynamov2
+package helixddb
 
 import (
 	"context"
@@ -12,12 +12,12 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/aws/smithy-go"
 	"github.com/aws/smithy-go/logging"
-	"github.com/junderhill/dynamo-v2/dynamov2dbiface"
+	"github.com/junderhill/helixddb/helixddbdbiface"
 )
 
 // DB is a DynamoDB client.
 type DB struct {
-	client dynamov2dbiface.DynamoDBAPI
+	client helixddbdbiface.DynamoDBAPI
 	logger logging.Logger
 }
 
@@ -34,7 +34,7 @@ func New(cfg aws.Config) *DB {
 }
 
 // NewFromIface creates a new client with the given interface.
-func NewFromIface(client dynamov2dbiface.DynamoDBAPI) *DB {
+func NewFromIface(client helixddbdbiface.DynamoDBAPI) *DB {
 	return &DB{
 		client: client,
 		logger: logging.NewStandardLogger(os.Stdout),
@@ -42,7 +42,7 @@ func NewFromIface(client dynamov2dbiface.DynamoDBAPI) *DB {
 }
 
 // Client returns this DB's internal client used to make API requests.
-func (db *DB) Client() dynamov2dbiface.DynamoDBAPI {
+func (db *DB) Client() helixddbdbiface.DynamoDBAPI {
 	return db.client
 }
 

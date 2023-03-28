@@ -3,7 +3,7 @@ integration_tests:
 	@command -v docker >/dev/null 2>&1 || { echo >&2 "I require docker but it's not installed.  Aborting."; exit 1; }
 	@command -v aws >/dev/null 2>&1 || { echo >&2 "I require aws-cli but it's not installed.  Aborting."; exit 1; }
 
-	docker run --name dynamov2-ddb -d -p 8000:8000 amazon/dynamodb-local
+	docker run --name helixddb-ddb -d -p 8000:8000 amazon/dynamodb-local
 
 	docker ps
 
@@ -24,5 +24,5 @@ integration_tests:
 
 	DYNAMO_TEST_TABLE=TestDB DYNAMO_TEST_REGION=eu-west-1 go test ./... -cover
 
-	docker stop dynamov2-ddb
-	docker rm dynamov2-ddb
+	docker stop helixddb-ddb
+	docker rm helixddb-ddb

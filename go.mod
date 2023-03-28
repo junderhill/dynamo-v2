@@ -1,4 +1,4 @@
-module github.com/junderhill/dynamo-v2
+module github.com/junderhill/helixddb
 
 require (
 	github.com/aws/aws-sdk-go v1.44.229

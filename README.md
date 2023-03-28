@@ -1,5 +1,5 @@
 ## dynamo [![GoDoc](https://godoc.org/github.com/guregu/dynamo?status.svg)](https://godoc.org/github.com/guregu/dynamo)
-`import "github.com/junderhill/dynamo-v2"`
+`import "github.com/junderhill/helixddb"`
 
 dynamo is an expressive [DynamoDB](https://aws.amazon.com/dynamodb/) client for Go, with an easy but powerful API. dynamo integrates with the official [AWS SDK v2](https://github.com/aws/aws-sdk-go-v2/).
 
@@ -8,7 +8,7 @@ This library is stable and versioned with Go modules.
 ### Example
 
 ```go
-package dynamov2
+package helixddb
 
 import (
 	"time"
@@ -17,7 +17,7 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
-	"github.com/junderhill/dynamo-v2"
+	"github.com/junderhill/helixddb"
 )
 
 // Use struct tags much like the standard JSON library,

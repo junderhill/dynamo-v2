@@ -1,4 +1,4 @@
-package dynamov2_test
+package helixddb_test
 
 import (
 	"encoding/json"
@@ -7,7 +7,7 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
-	dynamo "github.com/junderhill/dynamo-v2"
+	dynamo "github.com/junderhill/helixddb"
 )
 
 type Coffee struct {
