@@ -1,3 +1,16 @@
+helixddb - A DynamoDB library for Go
+
+Originally forked from github.com/guregu/dynamo
+
+Please find the original license below and all copyright and rights are reserved to the original authors (see below).
+
+Subsequent changes are licensed under the BSD 2-clause license.
+
+Copyright (c) 2023 - Jason Underhill <jason@junderhill.com>
+All rights reserved.
+
+------------------------------------------------------------------------
+
 dynamo - DynamoDB library for Go
 
 Copyright (c) 2015 - Gregory Roseberry <greg@toki.waseda.jp>

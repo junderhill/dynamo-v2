@@ -1,10 +1,23 @@
-## dynamo [![GoDoc](https://godoc.org/github.com/guregu/dynamo?status.svg)](https://godoc.org/github.com/guregu/dynamo)
+## helixddb [![GoDoc](https://godoc.org/github.com/junderhill/helixddb?status.svg)](https://godoc.org/github.com/junderhill/helixddb)
 `import "github.com/junderhill/helixddb"`
 
-HelixDdb is an expressive [DynamoDB](https://aws.amazon.com/dynamodb/) client for Go, with an easy but powerful API. HelixDdb integrates with the official [AWS SDK v2](https://github.com/aws/aws-sdk-go-v2/).
+helixddb is an expressive [DynamoDB](https://aws.amazon.com/dynamodb/) client for Go, with an easy but powerful API. helixddb integrates with the official [AWS SDK v2](https://github.com/aws/aws-sdk-go-v2/).
 
 This project is forked from [guregu/dynamo](https://github.com/guregu/dynamo) and builds on the hard work of the original author and the [PR](https://github.com/guregu/dynamo/pull/206) from [irohiroki](https://github.com/irohiroki) who ported the orginal `dynamo` library to the AWS DynamoDb SDK v2.
 
+---
+
+### Why use helixddb? 
+
+✅ **Expressive API** - helixddb is designed to be easy to use, but also powerful. It's a pleasure to write queries and scans, and the API is flexible enough to handle complex use cases. The resulting code is easier to read and maintain, and it's intent is clearer.
+
+✅ **Pagination** - helixddb handles pagination for you, so you can easily get all results from a query or scan.
+
+✅ **Batch operations** - helixddb makes it easy to perform batch operations, such as batch get and batch write.
+
+✅ **Expressions** - helixddb helps you write expressions used to filter results in queries and scans, and add conditions to puts and deletes.
+
+---
 ### Example
 
 ```go
@@ -40,7 +53,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("unable to load SDK config, %v", err)
 	}
-	db := dynamo.New(cfg)
+	db := helixddb.New(cfg)
 	table := db.Table("Widgets")
 
 	// put item
@@ -50,7 +63,7 @@ func main() {
 	// get the same item
 	var result widget
 	err = table.Get("UserID", w.UserID).
-		Range("Time", dynamo.Equal, w.Time).
+		Range("Time", helixddb.Equal, w.Time).
 		One(&result)
 
 	// get all items
@@ -65,7 +78,7 @@ func main() {
 
 ### Expressions
 
-dynamo will help you write expressions used to filter results in queries and scans, and add conditions to puts and deletes. 
+helixddb will help you write expressions used to filter results in queries and scans, and add conditions to puts and deletes. 
 
 Attribute names may be written as is if it is not a reserved word, or be escaped with single quotes (`''`). You may also use dollar signs (`$`) as placeholders for attribute names and list indexes. DynamoDB has [very large amount of reserved words](http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/ReservedWords.html) so it may be a good idea to just escape everything.
 
@@ -88,9 +101,9 @@ table.Put(item{ID: 42}).If("attribute_not_exists(ID)").Run()
 
 ### Encoding support
 
-dynamo automatically handles the following interfaces:
+helixddb automatically handles the following interfaces:
 
-* [`dynamo.Marshaler`](https://godoc.org/github.com/guregu/dynamo#Marshaler) and [`dynamo.Unmarshaler`](https://godoc.org/github.com/guregu/dynamo#Unmarshaler)
+* [`dynamo.Marshaler`](https://godoc.org/github.com/junderhill/helixddb#Marshaler) and [`dynamo.Unmarshaler`](https://godoc.org/github.com/junderhill/helixddb#Unmarshaler)
 * [`dynamodbattribute.Marshaler`](https://godoc.org/github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute#Marshaler) and [`dynamodbattribute.Unmarshaler`](https://godoc.org/github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute#Unmarshaler)
 * [`encoding.TextMarshaler`](https://godoc.org/encoding#TextMarshaler) and [`encoding.TextUnmarshaler`](https://godoc.org/encoding#TextUnmarshaler)
 
@@ -98,11 +111,11 @@ This allows you to define custom encodings and provides built-in support for typ
 
 ### Struct tags and fields
 
-dynamo handles struct tags similarly to the standard library `encoding/json` package. It uses `dynamo` for the struct tag's name, taking the form of: `dynamo:"attributeName,option1,option2,etc"`. You can omit the attribute name to use the default: `dynamo:",option1,etc"`.
+helixddb handles struct tags similarly to the standard library `encoding/json` package. It uses `dynamo` for the struct tag's name, taking the form of: `dynamo:"attributeName,option1,option2,etc"`. You can omit the attribute name to use the default: `dynamo:",option1,etc"`.
 
 #### Renaming
 
-By default, dynamo will use the name of your fields as the name of the DynamoDB attribute it corresponds do. You can specify a different name with the `dynamo` struct tag like so: `dynamo:"other_name_goes_here"`. If two fields have the same name, dynamo will prioritize the higher-level field.
+By default, helixddb will use the name of your fields as the name of the DynamoDB attribute it corresponds do. You can specify a different name with the `dynamo` struct tag like so: `dynamo:"other_name_goes_here"`. If two fields have the same name, helixddb will prioritize the higher-level field.
 
 #### Omission
 
@@ -183,9 +196,9 @@ This creates a table with the primary hash key ID and range key Time. It creates
 
 ### Compatibility with the official AWS library
 
-dynamo has been in development before the official AWS libraries were stable. We use a different encoder and decoder than the [dynamodbattribute](https://godoc.org/github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute) package. dynamo uses the `dynamo` struct tag instead of the `dynamodbav` struct tag, and we also prefer to automatically omit invalid values such as empty strings, whereas the dynamodbattribute package substitutes null values for them. Items that satisfy the [`dynamodbattribute.(Un)marshaler`](https://godoc.org/github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute#Marshaler) interfaces are compatibile with both libraries.
+The original dynamo package has been in development before the official AWS libraries were stable. We use a different encoder and decoder than the [dynamodbattribute](https://godoc.org/github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute) package. helixddb uses the `dynamo` struct tag instead of the `dynamodbav` struct tag, and we also prefer to automatically omit invalid values such as empty strings, whereas the dynamodbattribute package substitutes null values for them. Items that satisfy the [`dynamodbattribute.(Un)marshaler`](https://godoc.org/github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute#Marshaler) interfaces are compatibile with both libraries.
 
-In order to use dynamodbattribute's encoding facilities, you must wrap objects passed to dynamo with [`dynamo.AWSEncoding`](https://godoc.org/github.com/guregu/dynamo#AWSEncoding). Here is a quick example:
+In order to use dynamodbattribute's encoding facilities, you must wrap objects passed to helixddb with [`dynamo.AWSEncoding`](https://godoc.org/github.com/junderhill/helixddb#AWSEncoding). Here is a quick example:
 
 ```go
 // Notice the use of the dynamodbav struct tag
@@ -194,13 +207,13 @@ type book struct {
 	Title string `dynamodbav:"title"`
 }
 // Putting an item
-err := db.Table("Books").Put(dynamo.AWSEncoding(book{
+err := db.Table("Books").Put(helixddb.AWSEncoding(book{
 	ID:    42,
 	Title: "Principia Discordia",
 })).Run()
 // When getting an item you MUST pass a pointer to AWSEncoding!
 var someBook book
-err := db.Table("Books").Get("ID", 555).One(dynamo.AWSEncoding(&someBook))
+err := db.Table("Books").Get("ID", 555).One(helixddb.AWSEncoding(&someBook))
 ```
 
 ### Integration tests
@@ -211,13 +224,13 @@ Change the table name with the environment variable `DYNAMO_TEST_TABLE`. You mus
 
 
  ```bash
-DYNAMO_TEST_REGION=us-west-2 go test github.com/guregu/dynamo/... -cover
+DYNAMO_TEST_REGION=us-west-2 go test github.com/junderhill/helixddb/... -cover
  ```
 
 If you want to use [DynamoDB Local](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.html) to run local tests, specify `DYNAMO_TEST_ENDPOINT`.
 
  ```bash
-DYNAMO_TEST_REGION=us-west-2 DYNAMO_TEST_ENDPOINT=http://localhost:8000 go test github.com/guregu/dynamo/... -cover
+DYNAMO_TEST_REGION=us-west-2 DYNAMO_TEST_ENDPOINT=http://localhost:8000 go test github.com/junderhill/helixddb/... -cover
  ```
 
 Example of using [aws-cli](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Tools.CLI.html) to create a table for testing.
