@@ -56,6 +56,13 @@ func (d *Delete) Range(name string, value interface{}) *Delete {
 	return d
 }
 
+// SortKey is a synonym for Range. Specify the sort key (a.k.a. range key) to delete.
+// Name is the name of the sort key.
+// Value is the value of the sort key.
+func (d *Delete) SortKey(name string, value interface{}) *Delete {
+	return d.Range(name, value)
+}
+
 // If specifies a conditional expression for this delete to succeed.
 // Use single quotes to specificy reserved names inline (like 'Count').
 // Use the placeholder ? within the expression to substitute values, and use $ for names.

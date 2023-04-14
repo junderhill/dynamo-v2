@@ -49,6 +49,11 @@ func (check *ConditionCheck) Range(rangeKey string, value interface{}) *Conditio
 	return check
 }
 
+// SortKey is a synonym for Range. Specifies the sort key (a.k.a. range key) for this item.
+func (check *ConditionCheck) SortKey(rangeKey string, value interface{}) *ConditionCheck {
+	return check.Range(rangeKey, value)
+}
+
 // If specifies a conditional expression for this coniditon check to succeed.
 // Use single quotes to specificy reserved names inline (like 'Count').
 // Use the placeholder ? within the expression to substitute values, and use $ for names.
