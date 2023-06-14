@@ -60,9 +60,14 @@ func (u *Update) Range(name string, value interface{}) *Update {
 	u.rangeValue, err = marshal(value, flagNone)
 	u.setError(err)
 	if u.rangeValue == nil {
-		u.setError(fmt.Errorf("dynamo: update range key value is nil or omitted for attribute %q", u.rangeKey))
+		u.setError(fmt.Errorf("dynamo: update range/sort key value is nil or omitted for attribute %q", u.rangeKey))
 	}
 	return u
+}
+
+// SortKey is an alias for Range. Specify the sort key for the item to update.
+func (u *Update) SortKey(name string, value interface{}) *Update {
+	return u.Range(name, value)
 }
 
 // Set changes path to the given value.

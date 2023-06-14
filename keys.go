@@ -11,10 +11,12 @@ const (
 	NoneType   KeyType = ""
 )
 
-// Keyed provides hash key and range key values.
+// Keyed provides hash/partition key and range/sort key values.
 type Keyed interface {
 	HashKey() interface{}
 	RangeKey() interface{}
+	PartitionKey() interface{}
+	SortKey() interface{}
 }
 
 // Keys provides an easy way to specify the hash and range keys.
@@ -29,3 +31,9 @@ func (k Keys) HashKey() interface{} { return k[0] }
 
 // RangeKey returns the range key's value.
 func (k Keys) RangeKey() interface{} { return k[1] }
+
+// PartitionKey returns the hash key's value. (Synonym for HashKey)
+func (k Keys) PartitionKey() interface{} { return k[0] }
+
+// SortKey returns the sort key's value. (Synonym for RangeKey)
+func (k Keys) SortKey() interface{} { return k[1] }

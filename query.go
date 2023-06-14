@@ -99,14 +99,22 @@ func (q *Query) Range(name string, op Operator, values ...interface{}) *Query {
 	q.setError(err)
 	for i, v := range q.rangeValues {
 		if v == nil {
-			q.setError(fmt.Errorf("dynamo: query range key value is nil or omitted for attribute %q (range key #%d of %d)", q.rangeKey, i+1, len(q.rangeValues)))
+			q.setError(fmt.Errorf("dynamo: query range/sort key value is nil or omitted for attribute %q (range key #%d of %d)", q.rangeKey, i+1, len(q.rangeValues)))
 			break
 		}
 	}
 	if len(q.rangeValues) == 0 {
-		q.setError(fmt.Errorf("dynamo: query range key values are missing for attribute %q", q.rangeKey))
+		q.setError(fmt.Errorf("dynamo: query range/sort key values are missing for attribute %q", q.rangeKey))
 	}
 	return q
+}
+
+// SortKey is an alias for Range. Specify the sort key(s) to get.
+// For single item requests using One, op must be Equal.
+// Name is the name of the sort key.
+// Op specifies the operator to use when comparing values.
+func (q *Query) SortKey(name string, op Operator, values ...interface{}) *Query {
+	return q.Range(name, op, values...)
 }
 
 // StartFrom makes this query continue from a previous one.
