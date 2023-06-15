@@ -5,7 +5,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/aws/aws-sdk-go/aws"
+	smithytime "github.com/aws/smithy-go/time"
 	"github.com/cenkalti/backoff/v4"
 )
 
@@ -18,9 +18,9 @@ var RetryTimeout = 1 * time.Minute
 
 func defaultContext() (context.Context, context.CancelFunc) {
 	if RetryTimeout == 0 {
-		return aws.BackgroundContext(), (func() {})
+		return context.Background(), (func() {})
 	}
-	return context.WithDeadline(aws.BackgroundContext(), time.Now().Add(RetryTimeout))
+	return context.WithDeadline(context.Background(), time.Now().Add(RetryTimeout))
 }
 
 func retry(ctx context.Context, f func() error) error {
@@ -40,7 +40,7 @@ func retry(ctx context.Context, f func() error) error {
 			return err
 		}
 
-		if err = aws.SleepWithContext(ctx, next); err != nil {
+		if err = smithytime.SleepWithContext(ctx, next); err != nil {
 			return err
 		}
 	}
