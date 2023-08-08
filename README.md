@@ -230,7 +230,7 @@ DYNAMO_TEST_REGION=us-west-2 go test github.com/junderhill/helixddb/... -cover
 If you want to use [DynamoDB Local](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.html) to run local tests, specify `DYNAMO_TEST_ENDPOINT`.
 
  ```bash
-DYNAMO_TEST_REGION=us-west-2 DYNAMO_TEST_ENDPOINT=http://localhost:8000 go test github.com/junderhill/helixddb/... -cover
+DYNAMO_TEST_REGION=us-west-2 DYNAMO_TEST_ENDPOINT=http://localhost:8010 go test github.com/junderhill/helixddb/... -cover
  ```
 
 Example of using [aws-cli](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Tools.CLI.html) to create a table for testing.
@@ -249,7 +249,7 @@ aws dynamodb create-table \
         IndexName=Msg-Time-index,KeySchema=[{'AttributeName=Msg,KeyType=HASH'},{'AttributeName=Time,KeyType=RANGE'}],Projection={'ProjectionType=ALL'} \
     --billing-mode PAY_PER_REQUEST \
     --region us-west-2 \
-    --endpoint-url http://localhost:8000 # using DynamoDB local
+    --endpoint-url http://localhost:8010 # using DynamoDB local
 ```
 
 ### License
