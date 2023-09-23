@@ -28,6 +28,137 @@ func TestDescribeTable(t *testing.T) {
 	}
 }
 
+func TestDescribeTableLSIWithoutArn(t *testing.T) {
+	tableDescription := &types.TableDescription{
+		AttributeDefinitions: []types.AttributeDefinition{
+			{
+				AttributeName: aws.String("PK"),
+				AttributeType: "S",
+			},
+			{
+				AttributeName: aws.String("SK"),
+				AttributeType: "S",
+			},
+		},
+		TableName: aws.String("test"),
+		KeySchema: []types.KeySchemaElement{
+			{
+				AttributeName: aws.String("PK"),
+				KeyType:       "HASH",
+			},
+
+			{
+				AttributeName: aws.String("SK"),
+				KeyType:       "RANGE",
+			},
+		},
+		TableStatus:      "ACTIVE",
+		CreationDateTime: aws.Time(time.Now()),
+		ItemCount:        aws.Int64(1001),
+		TableSizeBytes:   aws.Int64(987654321),
+		LocalSecondaryIndexes: []types.LocalSecondaryIndexDescription{
+			{
+				IndexName: aws.String("test-index"),
+				KeySchema: []types.KeySchemaElement{
+					{
+						AttributeName: aws.String("PK"),
+						KeyType:       "HASH",
+					},
+					{
+						AttributeName: aws.String("SK"),
+						KeyType:       "RANGE",
+					},
+				},
+				Projection: &types.Projection{
+					ProjectionType: "ALL",
+				},
+				IndexSizeBytes: aws.Int64(123456789),
+				ItemCount:      aws.Int64(1001),
+			},
+		},
+	}
+
+	desc := newDescription(tableDescription)
+
+	if len(desc.LSI) != 1 {
+		t.Error("wrong index count:", len(desc.LSI), "≠", 1)
+	}
+
+	if desc.LSI[0].Name != "test-index" {
+		t.Error("wrong index name:", desc.LSI[0].Name, "≠", "test-index")
+	}
+
+}
+
+func TestDescribeTableGSIWithoutArn(t *testing.T) {
+	tableDescription := &types.TableDescription{
+		AttributeDefinitions: []types.AttributeDefinition{
+			{
+				AttributeName: aws.String("PK"),
+				AttributeType: "S",
+			},
+			{
+				AttributeName: aws.String("SK"),
+				AttributeType: "S",
+			},
+		},
+		TableName: aws.String("test"),
+		KeySchema: []types.KeySchemaElement{
+			{
+				AttributeName: aws.String("PK"),
+				KeyType:       "HASH",
+			},
+			{
+				AttributeName: aws.String("SK"),
+				KeyType:       "RANGE",
+			},
+		},
+		TableStatus:      "ACTIVE",
+		CreationDateTime: aws.Time(time.Now()),
+		ItemCount:        aws.Int64(1001),
+		TableSizeBytes:   aws.Int64(987654321),
+		GlobalSecondaryIndexes: []types.GlobalSecondaryIndexDescription{
+			{
+				IndexName:   aws.String("test-index"),
+				IndexStatus: "ACTIVE",
+				ProvisionedThroughput: &types.ProvisionedThroughputDescription{
+					ReadCapacityUnits:      aws.Int64(100),
+					WriteCapacityUnits:     aws.Int64(100),
+					LastIncreaseDateTime:   aws.Time(time.Now()),
+					LastDecreaseDateTime:   aws.Time(time.Now()),
+					NumberOfDecreasesToday: aws.Int64(1),
+				},
+				KeySchema: []types.KeySchemaElement{
+					{
+						AttributeName: aws.String("PK"),
+						KeyType:       "HASH",
+					},
+					{
+						AttributeName: aws.String("SK"),
+						KeyType:       "RANGE",
+					},
+				},
+				Projection: &types.Projection{
+					ProjectionType: "ALL",
+				},
+				IndexSizeBytes: aws.Int64(123456789),
+				ItemCount:      aws.Int64(1001),
+			},
+		},
+	}
+
+	desc := newDescription(tableDescription)
+
+	if len(desc.GSI) != 1 {
+		t.Error("wrong index count:", len(desc.GSI), "≠", 1)
+	}
+
+	if desc.GSI[0].Name != "test-index" {
+		t.Error("wrong index name:", desc.GSI[0].Name, "≠", "test-index")
+	}
+
+}
+
 func TestDescribeTableDescription(t *testing.T) {
 	tableDescription := &types.TableDescription{
 		AttributeDefinitions: []types.AttributeDefinition{
