@@ -1,0 +1,7 @@
+{
+    "go.testEnvVars": {
+        "DYNAMO_TEST_TABLE": "TestDB",
+        "DYNAMO_TEST_REGION": "eu-west-1",
+        "DYNAMO_TEST_ENDPOINT": "http://localhost:8010",
+    }
+}
