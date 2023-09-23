@@ -7,7 +7,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue v1.10.27
 	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.19.9
 	github.com/aws/smithy-go v1.13.5
-	github.com/cenkalti/backoff/v4 v4.1.2
+	github.com/cenkalti/backoff/v4 v4.2.1
 	github.com/google/go-cmp v0.5.9
 )
 
