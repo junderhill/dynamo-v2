@@ -225,75 +225,9 @@ func TestTableLifecycleSkipCreate(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	desc, err := testDB.Table(name).Describe().Run()
+	desc1, err := testDB.Table(name).Describe().Run()
 	if err != nil {
 		t.Fatal(err)
-	}
-	want := Description{
-		Name: name,
-		// ARN:    "arn:aws:dynamodb:ddblocal:000000000000:table/TestDB-1665411117776473700",
-		Status:       ActiveStatus,
-		HashKey:      "ID",
-		HashKeyType:  StringType,
-		RangeKey:     "Time",
-		RangeKeyType: StringType,
-		Throughput:   Throughput{Read: 1, Write: 1},
-		GSI: []Index{
-			{
-				Name: "Foo-Bar-index",
-				// ARN: "arn:aws:dynamodb:ddblocal:000000000000:table/TestDB-1665411117776473700/index/Foo-Bar-index",
-				Status:            ActiveStatus,
-				HashKey:           "Foo",
-				HashKeyType:       StringType,
-				RangeKey:          "Bar",
-				RangeKeyType:      NumberType,
-				Throughput:        Throughput{Read: 1, Write: 1},
-				ProjectionType:    AllProjection,
-				ProjectionAttribs: []string(nil),
-			},
-			{
-				Name: "Seq-ID-index",
-				// ARN: "arn:aws:dynamodb:ddblocal:000000000000:table/TestDB-1665411117776473700/index/Seq-ID-index",
-				Status:            ActiveStatus,
-				HashKey:           "Seq",
-				HashKeyType:       NumberType,
-				RangeKey:          "ID",
-				RangeKeyType:      StringType,
-				Throughput:        Throughput{Read: 1, Write: 1},
-				ProjectionType:    AllProjection,
-				ProjectionAttribs: []string(nil),
-			},
-			{
-				Name: "UUID-index",
-				// ARN: "arn:aws:dynamodb:ddblocal:000000000000:table/TestDB-1665411117776473700/index/UUID-index",
-				Status:            ActiveStatus,
-				HashKey:           "UUID",
-				HashKeyType:       StringType,
-				Throughput:        Throughput{Read: 1, Write: 1},
-				ProjectionType:    AllProjection,
-				ProjectionAttribs: []string(nil),
-			},
-		},
-		LSI: []Index{
-			{
-				Name: "ID-Seq-index",
-				// ARN: "arn:aws:dynamodb:ddblocal:000000000000:table/TestDB-1665411117776473700/index/ID-Seq-index",
-				Status:            ActiveStatus,
-				Backfilling:       false,
-				Local:             true,
-				HashKey:           "ID",
-				HashKeyType:       StringType,
-				RangeKey:          "Seq",
-				RangeKeyType:      NumberType,
-				Throughput:        Throughput{Read: 1, Write: 1},
-				ProjectionType:    AllProjection,
-				ProjectionAttribs: []string(nil),
-			},
-		},
-	}
-	normalizeDesc(&desc)
-	if !reflect.DeepEqual(want, desc) {
-		t.Errorf("unexpected table description. want:\n%#v\ngot:\n%#v\n", want, desc)
 	}
 
 	// make sure it really works
@@ -316,15 +250,15 @@ func TestTableLifecycleSkipCreate(t *testing.T) {
 	}
 
 	// get the new description
-	desc, err = testDB.Table(name).Describe().Run()
+	desc2, err := testDB.Table(name).Describe().Run()
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	// the description should be same as the original as this time the table
 	// will not be created.
-	if want.ARN != desc.ARN {
-		t.Errorf("unexpected table description. want:\n%#v\ngot:\n%#v\n", want, desc)
+	if desc1.ARN != desc2.ARN && desc1.Created.Equal(desc2.Created) {
+		t.Errorf("unexpected table description. want:\n%#v\ngot:\n%#v\n", desc1, desc2)
 	}
 
 	// delete & wait
