@@ -195,3 +195,140 @@ func normalizeDesc(desc *Description) {
 		return desc.LSI[i].Name < desc.LSI[j].Name
 	})
 }
+
+func TestTableLifecycleSkipCreate(t *testing.T) {
+	if testDB == nil {
+		t.Skip(offlineSkipMsg)
+	}
+
+	now := time.Now().UTC()
+	name := fmt.Sprintf("TestDB-%d", now.UnixNano())
+
+	// example from the docs
+	type UserAction struct {
+		UserID string    `dynamo:"ID,hash" index:"Seq-ID-index,range"`
+		Time   time.Time `dynamo:",range"`
+		Seq    int64     `localIndex:"ID-Seq-index,range" index:"Seq-ID-index,hash"`
+		UUID   string    `index:"UUID-index,hash"`
+	}
+
+	// create & wait
+	if err := testDB.CreateTable(name, UserAction{}).
+		Index(Index{
+			Name:         "Foo-Bar-index",
+			HashKey:      "Foo",
+			HashKeyType:  StringType,
+			RangeKey:     "Bar",
+			RangeKeyType: NumberType,
+		}).
+		Wait(); err != nil {
+		t.Fatal(err)
+	}
+
+	desc, err := testDB.Table(name).Describe().Run()
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := Description{
+		Name: name,
+		// ARN:    "arn:aws:dynamodb:ddblocal:000000000000:table/TestDB-1665411117776473700",
+		Status:       ActiveStatus,
+		HashKey:      "ID",
+		HashKeyType:  StringType,
+		RangeKey:     "Time",
+		RangeKeyType: StringType,
+		Throughput:   Throughput{Read: 1, Write: 1},
+		GSI: []Index{
+			{
+				Name: "Foo-Bar-index",
+				// ARN: "arn:aws:dynamodb:ddblocal:000000000000:table/TestDB-1665411117776473700/index/Foo-Bar-index",
+				Status:            ActiveStatus,
+				HashKey:           "Foo",
+				HashKeyType:       StringType,
+				RangeKey:          "Bar",
+				RangeKeyType:      NumberType,
+				Throughput:        Throughput{Read: 1, Write: 1},
+				ProjectionType:    AllProjection,
+				ProjectionAttribs: []string(nil),
+			},
+			{
+				Name: "Seq-ID-index",
+				// ARN: "arn:aws:dynamodb:ddblocal:000000000000:table/TestDB-1665411117776473700/index/Seq-ID-index",
+				Status:            ActiveStatus,
+				HashKey:           "Seq",
+				HashKeyType:       NumberType,
+				RangeKey:          "ID",
+				RangeKeyType:      StringType,
+				Throughput:        Throughput{Read: 1, Write: 1},
+				ProjectionType:    AllProjection,
+				ProjectionAttribs: []string(nil),
+			},
+			{
+				Name: "UUID-index",
+				// ARN: "arn:aws:dynamodb:ddblocal:000000000000:table/TestDB-1665411117776473700/index/UUID-index",
+				Status:            ActiveStatus,
+				HashKey:           "UUID",
+				HashKeyType:       StringType,
+				Throughput:        Throughput{Read: 1, Write: 1},
+				ProjectionType:    AllProjection,
+				ProjectionAttribs: []string(nil),
+			},
+		},
+		LSI: []Index{
+			{
+				Name: "ID-Seq-index",
+				// ARN: "arn:aws:dynamodb:ddblocal:000000000000:table/TestDB-1665411117776473700/index/ID-Seq-index",
+				Status:            ActiveStatus,
+				Backfilling:       false,
+				Local:             true,
+				HashKey:           "ID",
+				HashKeyType:       StringType,
+				RangeKey:          "Seq",
+				RangeKeyType:      NumberType,
+				Throughput:        Throughput{Read: 1, Write: 1},
+				ProjectionType:    AllProjection,
+				ProjectionAttribs: []string(nil),
+			},
+		},
+	}
+	normalizeDesc(&desc)
+	if !reflect.DeepEqual(want, desc) {
+		t.Errorf("unexpected table description. want:\n%#v\ngot:\n%#v\n", want, desc)
+	}
+
+	// make sure it really works
+	table := testDB.Table(name)
+	if err := table.Put(UserAction{UserID: "test", Time: now, Seq: 1, UUID: "42"}).Run(); err != nil {
+		t.Fatal(err)
+	}
+
+	// tries to create same table again
+	if err := testDB.CreateTableIfNotExists(name, UserAction{}).
+		Index(Index{
+			Name:         "Foo-Bar-index",
+			HashKey:      "Foo",
+			HashKeyType:  StringType,
+			RangeKey:     "Bar",
+			RangeKeyType: NumberType,
+		}).
+		Wait(); err != nil {
+		t.Fatal(err)
+	}
+
+	// get the new description
+	desc, err = testDB.Table(name).Describe().Run()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// the description should be same as the original as this time the table
+	// will not be created.
+	if want.ARN != desc.ARN {
+		t.Errorf("unexpected table description. want:\n%#v\ngot:\n%#v\n", want, desc)
+	}
+
+	// delete & wait
+	if err := testDB.Table(name).DeleteTable().Wait(); err != nil {
+		t.Fatal(err)
+	}
+}
