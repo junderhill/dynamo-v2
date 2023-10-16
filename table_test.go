@@ -195,3 +195,74 @@ func normalizeDesc(desc *Description) {
 		return desc.LSI[i].Name < desc.LSI[j].Name
 	})
 }
+
+func TestTableLifecycleSkipCreate(t *testing.T) {
+	if testDB == nil {
+		t.Skip(offlineSkipMsg)
+	}
+
+	now := time.Now().UTC()
+	name := fmt.Sprintf("TestDB-%d", now.UnixNano())
+
+	// example from the docs
+	type UserAction struct {
+		UserID string    `dynamo:"ID,hash" index:"Seq-ID-index,range"`
+		Time   time.Time `dynamo:",range"`
+		Seq    int64     `localIndex:"ID-Seq-index,range" index:"Seq-ID-index,hash"`
+		UUID   string    `index:"UUID-index,hash"`
+	}
+
+	// create & wait
+	if err := testDB.CreateTable(name, UserAction{}).
+		Index(Index{
+			Name:         "Foo-Bar-index",
+			HashKey:      "Foo",
+			HashKeyType:  StringType,
+			RangeKey:     "Bar",
+			RangeKeyType: NumberType,
+		}).
+		Wait(); err != nil {
+		t.Fatal(err)
+	}
+
+	desc1, err := testDB.Table(name).Describe().Run()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// make sure it really works
+	table := testDB.Table(name)
+	if err := table.Put(UserAction{UserID: "test", Time: now, Seq: 1, UUID: "42"}).Run(); err != nil {
+		t.Fatal(err)
+	}
+
+	// tries to create same table again
+	if err := testDB.CreateTableIfNotExists(name, UserAction{}).
+		Index(Index{
+			Name:         "Foo-Bar-index",
+			HashKey:      "Foo",
+			HashKeyType:  StringType,
+			RangeKey:     "Bar",
+			RangeKeyType: NumberType,
+		}).
+		Wait(); err != nil {
+		t.Fatal(err)
+	}
+
+	// get the new description
+	desc2, err := testDB.Table(name).Describe().Run()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// the description should be same as the original as this time the table
+	// will not be created.
+	if desc1.ARN != desc2.ARN && desc1.Created.Equal(desc2.Created) {
+		t.Errorf("unexpected table description. want:\n%#v\ngot:\n%#v\n", desc1, desc2)
+	}
+
+	// delete & wait
+	if err := testDB.Table(name).DeleteTable().Wait(); err != nil {
+		t.Fatal(err)
+	}
+}

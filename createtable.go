@@ -55,6 +55,7 @@ type CreateTable struct {
 	ondemand                bool
 	tags                    []types.Tag
 	encryptionSpecification *types.SSESpecification
+	skipCreate              bool
 	err                     error
 }
 
@@ -87,6 +88,29 @@ func (db *DB) CreateTable(name string, from interface{}) *CreateTable {
 	}
 	rv := reflect.ValueOf(from)
 	ct.setError(ct.from(rv))
+	return ct
+}
+
+// CreateTableIfNotExists begins a new operation to create a table with the given name
+// and will skip table creation if the table resource already exists.
+// The second parameter must be a struct with appropriate hash and range key struct tags
+// for the primary key and all indices.
+//
+// An example of a from struct follows:
+//
+//	type UserAction struct {
+//		UserID string    `dynamo:"ID,hash" index:"Seq-ID-index,range"`
+//		Time   time.Time `dynamo:",range"`
+//		Seq    int64     `localIndex:"ID-Seq-index,range" index:"Seq-ID-index,hash"`
+//		UUID   string    `index:"UUID-index,hash"`
+//	}
+//
+// This creates a table with the primary hash key ID and range key Time.
+// It creates two global secondary indices called UUID-index and Seq-ID-index,
+// and a local secondary index called ID-Seq-index.
+func (db *DB) CreateTableIfNotExists(name string, from interface{}) *CreateTable {
+	ct := db.CreateTable(name, from)
+	ct.skipCreate = true
 	return ct
 }
 
@@ -249,9 +273,30 @@ func (ct *CreateTable) RunWithContext(ctx context.Context) error {
 
 	input := ct.input()
 	return retry(ctx, func() error {
-		_, err := ct.db.client.CreateTable(ctx, input)
-		return err
+		exists, err := ct.checkIfExists(ctx)
+		if err != nil {
+			return err
+		}
+
+		if !exists {
+			_, err = ct.db.client.CreateTable(ctx, input)
+			return err
+		}
+
+		return nil
 	})
+}
+
+// checkIfExists checks whether a table resource exists or not
+func (ct *CreateTable) checkIfExists(ctx context.Context) (bool, error) {
+	if !ct.skipCreate {
+		return false, nil
+	}
+	dto, err := ct.db.client.DescribeTable(ctx, &dynamodb.DescribeTableInput{
+		TableName: &ct.tableName,
+	})
+
+	return dto.Table.TableArn != nil, err
 }
 
 // Wait creates this table and blocks until it exists and is ready to use.
